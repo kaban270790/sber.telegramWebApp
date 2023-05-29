@@ -12,6 +12,7 @@
   </head>
   <body>
     <div id="hello">Добро пожаловать!</div>
+    <div id="photo"></div>
     <script>
       {
         let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
@@ -22,6 +23,11 @@
         ).innerText = `Добро пожаловать, ${tg.initDataUnsafe.user.first_name}
 ${tg.initDataUnsafe.user.last_name}
 ${tg.initDataUnsafe.user.username}! (${tg.initDataUnsafe.user.language_code})`;
+        if (tg.initDataUnsafe.user.photo_url) {
+          document.getElementById(
+            "photo"
+          ).innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" />`;
+        }
       }
     </script>
   </body>
