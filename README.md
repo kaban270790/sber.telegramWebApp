@@ -1,1 +1,1 @@
-# sber.telegramWebApp
+# Тестовое приложение для telegram webApp
