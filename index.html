@@ -46,70 +46,70 @@
             "Другие продукты",
           ],
         };
-        if (!allOperations[office]) {
+        if (allOperations[office]) {
+          const operations = allOperations[office];
+          const elList = document.getElementById("list");
+          const elOffice = document.getElementById("office");
+          const elProgress = document.getElementById("progress");
+          const elTalon = document.getElementById("talon");
+          const elTimer = document.getElementById("timer");
+
+          elOffice.textContent = 'Операции для ВСП "' + office + '"';
+
+          let timeForCall = 10;
+          const callTalon = () => {
+            elTimer.innerText = String(timeForCall);
+            console.log(timeForCall);
+            if (timeForCall > 0) {
+              setTimeout(() => {
+                timeForCall--;
+                callTalon();
+              }, 1000);
+              return;
+            }
+            tg.offEvent("popupClosed", callTalon);
+            tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
+          };
+          const successRecord = () => {
+            elProgress.style.display = "none";
+            elTalon.style.display = "";
+            tg.showPopup({ title: "Ваш талон", message: "В 023" });
+            tg.onEvent("popupClosed", callTalon);
+          };
+          const factoryHandlerSelectOperation = (operation) => () => {
+            elList.style.display = "none";
+            elProgress.style.display = "";
+            setTimeout(successRecord, 3000);
+          };
+          const createButton = (operation) => {
+            const elButton = document.createElement("button");
+            elButton.addEventListener(
+              "click",
+              factoryHandlerSelectOperation(operation)
+            );
+            elButton.style.display = "block";
+            elButton.style.marginTop = "10px";
+            elButton.style.padding = "5px 20px";
+            elButton.style.width = "100%";
+            elButton.innerHTML = operation;
+            return elButton;
+          };
+          const showList = () => {
+            elList.style.display = "";
+            if (elList.children.length > 0) {
+              return;
+            }
+            operations.forEach((operation) => {
+              elList.appendChild(createButton(operation));
+            });
+          };
+          showList();
+        } else {
           tg.showPopup({
             title: "Ошибка",
             message: "Не смогли определить офис",
           });
-          return;
         }
-        const operations = allOperations[office];
-        const elList = document.getElementById("list");
-        const elOffice = document.getElementById("office");
-        const elProgress = document.getElementById("progress");
-        const elTalon = document.getElementById("talon");
-        const elTimer = document.getElementById("timer");
-
-        elOffice.textContent = 'Операции для ВСП "' + office + '"';
-
-        let timeForCall = 10;
-        const callTalon = () => {
-          elTimer.innerText = String(timeForCall);
-          console.log(timeForCall);
-          if (timeForCall > 0) {
-            setTimeout(() => {
-              timeForCall--;
-              callTalon();
-            }, 1000);
-            return;
-          }
-          tg.offEvent("popupClosed", callTalon);
-          tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
-        };
-        const successRecord = () => {
-          elProgress.style.display = "none";
-          elTalon.style.display = "";
-          tg.showPopup({ title: "Ваш талон", message: "В 023" });
-          tg.onEvent("popupClosed", callTalon);
-        };
-        const factoryHandlerSelectOperation = (operation) => () => {
-          elList.style.display = "none";
-          elProgress.style.display = "";
-          setTimeout(successRecord, 3000);
-        };
-        const createButton = (operation) => {
-          const elButton = document.createElement("button");
-          elButton.addEventListener(
-            "click",
-            factoryHandlerSelectOperation(operation)
-          );
-          elButton.style.display = "block";
-          elButton.style.marginTop = "10px";
-          elButton.style.padding = "5px 20px";
-          elButton.style.width = "100%";
-          elButton.innerHTML = operation;
-          return elButton;
-        };
-        const showList = () => {
-          elList.style.display = "";
-          if (elList.children.length > 0) {
-            return;
-          }
-          operations.forEach((operation) => {
-            elList.appendChild(createButton(operation));
-          });
-        };
-        showList();
       }
     </script>
   </body>
