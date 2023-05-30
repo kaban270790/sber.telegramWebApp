@@ -12,7 +12,12 @@
   </head>
   <body>
     <div id="hello">Добро пожаловать!</div>
-    <div id="photo"></div>
+    <div id="list"></div>
+    <div id="progress" style="display: none">Идет процесс записи в офис...</div>
+    <div id="talon" style="display: none">
+      <div>Ваш талон</div>
+      <div>В 023</div>
+    </div>
     <script>
       {
         let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
@@ -20,14 +25,54 @@
         tg.expand(); //расширяем на все окно
         document.getElementById(
           "hello"
-        ).innerText = `Добро пожаловать, ${tg.initDataUnsafe.user.first_name}
-${tg.initDataUnsafe.user.last_name}
-${tg.initDataUnsafe.user.username}! (${tg.initDataUnsafe.user.language_code})`;
-        if (tg.initDataUnsafe.user.photo_url) {
-          document.getElementById(
-            "photo"
-          ).innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" />`;
-        }
+        ).innerText = `Добро пожаловать, ${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}!`;
+        const operations = [
+          "Кредиты, ипотека",
+          "Платежи наличными",
+          "Карты",
+          "Платежи по карте",
+          "Наличные, пенсии",
+          "Вклады, счета",
+          "Другие продукты",
+        ];
+
+        const elList = document.getElementById("list");
+        const elProgress = document.getElementById("progress");
+        const elTalon = document.getElementById("talon");
+
+        const successRecord = () => {
+          elProgress.style.display = "none";
+          elTalon.style.display = "";
+          tg.showPopup({ title: "Ваш талон", message: "В 023" });
+        };
+        const factoryHandlerSelectOperation = (operation) => () => {
+          elList.style.display = "none";
+          elProgress.style.display = "";
+          setTimeout(successRecord, 3000);
+        };
+        const createButton = (operation) => {
+          const elButton = document.createElement("button");
+          elButton.addEventListener(
+            "click",
+            factoryHandlerSelectOperation(operation)
+          );
+          elButton.style.display = "block";
+          elButton.style.marginTop = "10px";
+          elButton.style.padding = "5px 20px";
+          elButton.style.width = "100%";
+          elButton.innerHTML = operation;
+          return elButton;
+        };
+        const showList = () => {
+          elList.style.display = "";
+          if (elList.children.length > 0) {
+            return;
+          }
+          operations.forEach((operation) => {
+            elList.appendChild(createButton(operation));
+          });
+        };
+        showList();
       }
     </script>
   </body>
