@@ -12,6 +12,7 @@
   </head>
   <body>
     <div id="hello">Добро пожаловать!</div>
+    <div id="office"></div>
     <div id="list"></div>
     <div id="progress" style="display: none">Идет процесс записи в офис...</div>
     <div id="talon" style="display: none">
@@ -27,20 +28,39 @@
         document.getElementById(
           "hello"
         ).innerText = `Добро пожаловать, ${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}!`;
-        const operations = [
-          "Кредиты, ипотека",
-          "Платежи наличными",
-          "Карты",
-          "Платежи по карте",
-          "Наличные, пенсии",
-          "Вклады, счета",
-          "Другие продукты",
-        ];
-
+        const office = tg.initDataUnsafe.start_param;
+        const allOperations = {
+          1234: [
+            "Кредиты, ипотека",
+            "Платежи наличными",
+            "Карты",
+            "Платежи по карте",
+            "Наличные, пенсии",
+            "Вклады, счета",
+            "Другие продукты",
+          ],
+          5678: [
+            "Карты",
+            "Платежи по карте",
+            "Вклады, счета",
+            "Другие продукты",
+          ],
+        };
+        if (!allOperations[office]) {
+          tg.showPopup({
+            title: "Ошибка",
+            message: "Не смогли определить офис",
+          });
+          return;
+        }
+        const operations = allOperations[office];
         const elList = document.getElementById("list");
+        const elOffice = document.getElementById("office");
         const elProgress = document.getElementById("progress");
         const elTalon = document.getElementById("talon");
         const elTimer = document.getElementById("timer");
+
+        elOffice.textContent = 'Операции для ВСП "' + office + '"';
 
         let timeForCall = 10;
         const callTalon = () => {
