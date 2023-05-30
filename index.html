@@ -17,6 +17,7 @@
     <div id="talon" style="display: none">
       <div>Ваш талон</div>
       <div>В 023</div>
+      <div>Вас вызовут через <span id="timer"></span> сек</div>
     </div>
     <script>
       {
@@ -39,11 +40,25 @@
         const elList = document.getElementById("list");
         const elProgress = document.getElementById("progress");
         const elTalon = document.getElementById("talon");
+        const elTimer = document.getElementById("timer");
 
+        let timeForCall = 10;
+        const callTalon = () => {
+            elTimer.innerText = String(elTimer);
+            if (timeForCall > 0) {
+                setTimeout(() => {
+                    timeForCall--;
+                }, 1000);
+                return;
+            }
+            tg.offEvent('popupClosed', callTalon);
+            tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
+        };
         const successRecord = () => {
           elProgress.style.display = "none";
           elTalon.style.display = "";
           tg.showPopup({ title: "Ваш талон", message: "В 023" });
+          tg.onEvent('popupClosed', callTalon);
         };
         const factoryHandlerSelectOperation = (operation) => () => {
           elList.style.display = "none";
