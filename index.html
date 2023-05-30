@@ -44,21 +44,22 @@
 
         let timeForCall = 10;
         const callTalon = () => {
-            elTimer.innerText = String(elTimer);
-            if (timeForCall > 0) {
-                setTimeout(() => {
-                    timeForCall--;
-                }, 1000);
-                return;
-            }
-            tg.offEvent('popupClosed', callTalon);
-            tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
+          elTimer.innerText = String(timeForCall);
+          console.log(timeForCall);
+          if (timeForCall > 0) {
+            setTimeout(() => {
+              timeForCall--;
+            }, 1000);
+            return;
+          }
+          tg.offEvent("popupClosed", callTalon);
+          tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
         };
         const successRecord = () => {
           elProgress.style.display = "none";
           elTalon.style.display = "";
           tg.showPopup({ title: "Ваш талон", message: "В 023" });
-          tg.onEvent('popupClosed', callTalon);
+          tg.onEvent("popupClosed", callTalon);
         };
         const factoryHandlerSelectOperation = (operation) => () => {
           elList.style.display = "none";
