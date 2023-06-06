@@ -1,0 +1,93 @@
+<!doctype html><html><head><title>Добро пожаловать!</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>body {
+        background-color: var(--tg-theme-bg-color);
+        color: var(--tg-theme-text-color);
+      }</style><script defer="defer" src="app.js"></script></head><body><div id="hello">Добро пожаловать!</div><div id="office"></div><div id="list"></div><div id="progress" style="display: none">Идет процесс записи в офис...</div><div id="talon" style="display: none"><div>Ваш талон</div><div>В 023</div><div>Вас вызовут через <span id="timer"></span> сек</div></div><script>{
+        let tg = window.Telegram.WebApp; //получаем объект webapp телеграма
+
+        tg.expand(); //расширяем на все окно
+        document.getElementById(
+          "hello"
+        ).innerText = `Добро пожаловать, ${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}!`;
+        const office = tg.initDataUnsafe.start_param;
+        const allOperations = {
+          1234: [
+            "Кредиты, ипотека",
+            "Платежи наличными",
+            "Карты",
+            "Платежи по карте",
+            "Наличные, пенсии",
+            "Вклады, счета",
+            "Другие продукты",
+          ],
+          5678: [
+            "Карты",
+            "Платежи по карте",
+            "Вклады, счета",
+            "Другие продукты",
+          ],
+        };
+        if (allOperations[office]) {
+          const operations = allOperations[office];
+          const elList = document.getElementById("list");
+          const elOffice = document.getElementById("office");
+          const elProgress = document.getElementById("progress");
+          const elTalon = document.getElementById("talon");
+          const elTimer = document.getElementById("timer");
+
+          elOffice.textContent = 'Операции для ВСП "' + office + '"';
+
+          let timeForCall = 10;
+          const callTalon = () => {
+            elTimer.innerText = String(timeForCall);
+            console.log(timeForCall);
+            if (timeForCall > 0) {
+              setTimeout(() => {
+                timeForCall--;
+                callTalon();
+              }, 1000);
+              return;
+            }
+            tg.offEvent("popupClosed", callTalon);
+            tg.showPopup({ title: "Вас ожидают", message: "Окно 5" });
+          };
+          const successRecord = () => {
+            elProgress.style.display = "none";
+            elTalon.style.display = "";
+            tg.showPopup({ title: "Ваш талон", message: "В 023" });
+            tg.onEvent("popupClosed", callTalon);
+          };
+          const factoryHandlerSelectOperation = (operation) => () => {
+            elList.style.display = "none";
+            elProgress.style.display = "";
+            setTimeout(successRecord, 3000);
+          };
+          const createButton = (operation) => {
+            const elButton = document.createElement("button");
+            elButton.addEventListener(
+              "click",
+              factoryHandlerSelectOperation(operation)
+            );
+            elButton.style.display = "block";
+            elButton.style.marginTop = "10px";
+            elButton.style.padding = "5px 20px";
+            elButton.style.width = "100%";
+            elButton.innerHTML = operation;
+            return elButton;
+          };
+          const showList = () => {
+            elList.style.display = "";
+            if (elList.children.length > 0) {
+              return;
+            }
+            operations.forEach((operation) => {
+              elList.appendChild(createButton(operation));
+            });
+          };
+          showList();
+        } else {
+          tg.showPopup({
+            title: "Ошибка",
+            message: "Не смогли определить офис",
+          });
+        }
+      }</script></body></html>
